@@ -1,7 +1,11 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\Seller\SellerController;
+use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,21 +20,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('user/register', [RegisterController::class, 'userRegister']);
+Route::post('seller/register', [RegisterController::class, 'sellerRegister']);
+
+Route::post("/seller/email_verification",[RegisterController::class, 'sellerEmailVerify'])->name('sellerEmailVerify');
+
+Route::post('/logout', [LoginController::class, 'logout']);
+Route::post('/refresh', [LoginController::class, 'refresh']);
+Route::get('/getAllRoles', [HomeController::class, 'getAllRoles']); 
+
+
+// Admin
+Route::group(['middleware' => ['jwt.role:1'], 'prefix' => 'admin'], function ($router) {
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+
+    Route::resource('user_management', AdminController::class)->except(['update', 'destroy']);
+    Route::post("user_management/{id}/", [AdminController::class, 'updated'])->name('user_management.updated');
+    Route::get("user_management/{id}/", [AdminController::class, 'destroy']);
+    Route::post("user_management/statusUpdate/", [AdminController::class, 'statusUpdate']);
 });
 
-// Route::group([
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-// ], function ($router) {
-    Route::post('/login', [LoginController::class, 'login']);
-    Route::post('user/register', [RegisterController::class, 'userRegister']);
-    Route::post('seller/register', [RegisterController::class, 'sellerRegister']);
-    
-    Route::post("/seller/email_verification",[RegisterController::class, 'sellerEmailVerify'])->name('sellerEmailVerify');
+// client or seller
+Route::group(['middleware' => ['jwt.role:2'], 'prefix' => 'seller'], function ($router) {
+    Route::get('/dashboard', [SellerController::class, 'dashboard']);
+});
 
-    Route::post('/logout', [LoginController::class, 'logout']);
-    Route::post('/refresh', [LoginController::class, 'refresh']);
-    Route::get('/user-profile', [LoginController::class, 'userProfile']); 
-// });
+// user
+Route::group(['middleware' => ['jwt.role:3'], 'prefix' => 'user'], function ($router) {
+    Route::get('/dashboard', [UserController::class, 'dashboard']);
+});

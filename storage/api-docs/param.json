@@ -1,0 +1,56 @@
+{
+    "components": {
+        "schemas": {
+          "user": {
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "requestBodies": {
+            "updateUserByAdmin": {
+                "type": "object",
+                "Content-Type": "application/json",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "user1",
+                        "property": "name"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "74158236985"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "user1@gmail.com"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "example": "male"
+                    },
+                    "role": {
+                        "description": "select a role",
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "image": {
+                        "description": "file to upload",
+                        "type": "file",
+                        "format": "file"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "404NotFound": {
+                "description": "The specified resource was not found."
+            }
+        }
+      }
+}

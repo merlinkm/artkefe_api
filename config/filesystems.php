@@ -71,6 +71,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('seller_profile_img') => storage_path('app/uploads/seller_profile'),
+        public_path('user_profile_img') => storage_path('app/uploads/user_profile'),
+        public_path('admin_profile_img') => storage_path('app/uploads/admin_profile'),
     ],
 
 ];
